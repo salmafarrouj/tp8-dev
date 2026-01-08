@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User root: each user owns their own documents under /users/{uid}/...
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Todos collection for a user
+      match /todos/{todoId} {
+        // Basic: user can read/write their own todos
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Preferences for a user
+      match /preferences/{prefId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
